@@ -13,7 +13,7 @@
 
 1. **Planner/Orchestrator — confirm scope, ownership, and handoffs.** Do this before implementation; communicate the deliverables and file boundaries.
 2. **Designer — implement responsive, accessible visual styling.** Report the CSS hooks (class names and expected use) to the Coder. The stylesheet and hook report are prerequisites for HTML work.
-3. **Coder — create `app/project-data.json` and `.vscode/launch.json`.** These can be created while the Designer works. Do not overlap edits to any file.
+3. **Coder — create `app/project-data.json` and `.vscode/launch.json` in parallel with Designer.** These files have no CSS dependencies, so Coder can prepare them while Designer works. Keep file ownership separate; HTML integration waits for the CSS hook report.
 4. **Coder — create `app/index.html` after the Designer reports hooks.** Use those CSS hooks and the agreed JSON contract.
 5. **Orchestrator — integrate and verify after all four files exist.** Report issues to the responsible owner for correction; do not take over implementation.
 
