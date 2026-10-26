@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A clear, contributor-friendly overview of Mona's team projects.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <p class="dashboard-eyebrow">Team overview</p>
+        <h1 class="dashboard-title">Project Pulse</h1>
+        <p class="dashboard-summary">
+          See who is driving each project, what changed recently, and where the team should focus next.
+        </p>
+      </header>
+
+      <section aria-label="Projects">
+        <div id="dashboard-message" class="dashboard-empty" role="status" aria-live="polite">
+          Loading project data…
+        </div>
+        <div id="project-grid" class="project-grid" aria-label="Project cards"></div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const grid = document.getElementById("project-grid");
+        const message = document.getElementById("dashboard-message");
+        const requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+
+        function showMessage(text, type) {
+          message.className = type;
+          message.textContent = text;
+          message.hidden = false;
+        }
+
+        function statusToken(value) {
+          return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        }
+
+        function createDetail(label, value, className) {
+          const wrapper = document.createElement("div");
+          if (className) wrapper.className = className;
+
+          const term = document.createElement("dt");
+          term.textContent = label;
+          const description = document.createElement("dd");
+          description.textContent = value;
+          wrapper.append(term, description);
+          return wrapper;
+        }
+
+        function createProjectCard(project) {
+          const card = document.createElement("article");
+          card.className = "project-card";
+
+          const header = document.createElement("header");
+          header.className = "project-card-header";
+
+          const title = document.createElement("h2");
+          title.className = "project-card-title";
+          title.textContent = project.name;
+
+          const status = document.createElement("span");
+          const statusClass = statusToken(project.status);
+          status.className = `status-badge${statusClass ? ` status--${statusClass}` : ""}`;
+          if (statusClass) status.dataset.status = statusClass;
+          status.textContent = project.status;
+          status.setAttribute("aria-label", `Status: ${project.status}`);
+          header.append(title, status);
+
+          const owner = document.createElement("p");
+          owner.className = "project-owner";
+          owner.textContent = `Owner: ${project.owner}`;
+
+          const details = document.createElement("dl");
+          details.append(createDetail("Priority", project.priority));
+
+          const priorityBadge = details.querySelector("dd");
+          const priorityClass = statusToken(project.priority);
+          priorityBadge.className = `priority-badge${priorityClass ? ` priority--${priorityClass}` : ""}`;
+          if (priorityClass) priorityBadge.dataset.priority = priorityClass;
+
+          const activity = document.createElement("div");
+          activity.className = "project-activity";
+          const activityTitle = document.createElement("h3");
+          activityTitle.className = "project-label";
+          activityTitle.textContent = "Recent activity";
+          const activityText = document.createElement("p");
+          activityText.textContent = project.recentActivity;
+          activity.append(activityTitle, activityText);
+
+          const progressSection = document.createElement("section");
+          progressSection.className = "project-progress";
+          const progressLabel = document.createElement("label");
+          progressLabel.textContent = "Progress";
+          const progress = document.createElement("progress");
+          progress.setAttribute("aria-label", `${project.name} Progress`);
+          progress.max = 100;
+          progress.value = project.progress;
+          progressLabel.append(progress);
+          const progressText = document.createElement("p");
+          progressText.textContent = `${project.progress}% complete`;
+          progressSection.append(progressLabel, progressText);
+
+          const milestone = document.createElement("div");
+          milestone.className = "project-milestone";
+          const milestoneTitle = document.createElement("h3");
+          milestoneTitle.className = "project-label";
+          milestoneTitle.textContent = "Next milestone";
+          const milestoneText = document.createElement("p");
+          milestoneText.textContent = project.nextMilestone;
+          milestone.append(milestoneTitle, milestoneText);
+
+          card.append(header, owner, details, activity, progressSection, milestone);
+          return card;
+        }
+
+        function isValidProject(project) {
+          return project !== null &&
+            typeof project === "object" &&
+            !Array.isArray(project) &&
+            requiredFields.every((field) =>
+              typeof project[field] === "string" && project[field].trim().length > 0
+            ) &&
+            Number.isInteger(project.progress) &&
+            project.progress >= 0 &&
+            project.progress <= 100 &&
+            typeof project.nextMilestone === "string" &&
+            project.nextMilestone.trim().length > 0 &&
+            project.nextMilestone.trim().length <= 120;
+        }
+
+        async function loadProjects() {
+          try {
+            const response = await fetch("project-data.json");
+            if (!response.ok) {
+              throw new Error(`The project data request failed (HTTP ${response.status}).`);
+            }
+
+            const data = await response.json();
+            if (!data || typeof data !== "object" || !Array.isArray(data.projects)) {
+              throw new Error('The project data is malformed: expected an object with a "projects" array.');
+            }
+            if (!data.projects.every(isValidProject)) {
+              throw new Error("The project data is malformed: every project must include non-empty name, owner, status, recentActivity, priority, and nextMilestone fields; progress must be an integer from 0 to 100, and nextMilestone must be 120 characters or fewer.");
+            }
+
+            if (data.projects.length === 0) {
+              showMessage("No projects to show yet. Add project details to project-data.json to get started.", "dashboard-empty");
+              return;
+            }
+
+            const cards = data.projects.map(createProjectCard);
+            grid.replaceChildren(...cards);
+            message.hidden = true;
+          } catch (error) {
+            const reason = error instanceof Error ? error.message : "An unexpected error occurred.";
+            showMessage(`Project data could not be loaded. ${reason}`, "dashboard-error");
+          }
+        }
+
+        loadProjects();
+      })();
+    </script>
+  </body>
+</html>

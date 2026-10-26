@@ -1,0 +1,40 @@
+{
+  "projects": [
+    {
+      "name": "Community Onboarding",
+      "owner": "Mona Patel",
+      "status": "In Progress",
+      "recentActivity": "Published the refreshed contributor guide and scheduled two onboarding sessions for next week.",
+      "priority": "High",
+      "progress": 65,
+      "nextMilestone": "Complete the first onboarding session"
+    },
+    {
+      "name": "Documentation Refresh",
+      "owner": "Jordan Lee",
+      "status": "On Track",
+      "recentActivity": "Reviewed the API reference with maintainers and merged updates to the installation and setup pages.",
+      "priority": "Medium",
+      "progress": 80,
+      "nextMilestone": "Publish the revised API reference"
+    },
+    {
+      "name": "Accessibility Improvements",
+      "owner": "Sam Rivera",
+      "status": "At Risk",
+      "recentActivity": "Completed keyboard testing for the settings flow; a screen-reader review is waiting on volunteer availability.",
+      "priority": "High",
+      "progress": 45,
+      "nextMilestone": "Schedule the screen-reader review"
+    },
+    {
+      "name": "Release Readiness",
+      "owner": "Avery Chen",
+      "status": "On Track",
+      "recentActivity": "The release checklist is nearly complete, with final translation checks planned for Friday.",
+      "priority": "Low",
+      "progress": 90,
+      "nextMilestone": "Finish final translation checks"
+    }
+  ]
+}
