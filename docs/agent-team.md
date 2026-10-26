@@ -8,10 +8,10 @@ the plan, design, and implementation.
 
 | Agent | Profile | Configured model | Responsibilities |
 | --- | --- | --- | --- |
-| Orchestrator | `.github/agents/orchestrator.agent.md` | Claude Opus 5.5 (copilot) | Coordinates the specialists, turns the plan into phases, assigns explicit file scopes, manages dependencies, integrates and verifies the result, and reports the outcome. It does not implement the dashboard. |
-| Planner | `.github/agents/planner.agent.md` | Claude Opus 5.5 (copilot) | Reads relevant repository context and returns an actionable plan: ordered steps, file assignments, dependencies, parallelizable work, edge cases, validation expectations, and open questions. It does not write code. |
-| Designer | `.github/agents/designer.agent.md` | Gemini 3.7 Flash (copilot) | Defines and implements the dashboard's visual design and responsive, accessible presentation within its assigned scope. For Project Pulse, it should deliver polished styling, project cards, status badges, clear priority treatment, readable spacing, and deterministic CSS hooks. |
-| Coder | `.github/agents/coder.agent.md` | GPT-5.5 (copilot) | Implements the static dashboard and assigned runnable-app support. It follows the design direction, keeps the data and behavior deterministic, and validates its changes. |
+| Orchestrator | `.github/agents/orchestrator.agent.md` | gpt-6-luna | Coordinates the specialists, turns the plan into phases, assigns explicit file scopes, manages dependencies, integrates and verifies the result, and reports the outcome. It does not implement the dashboard. |
+| Planner | `.github/agents/planner.agent.md` | gpt-6-luna | Reads relevant repository context and returns an actionable plan: ordered steps, file assignments, dependencies, parallelizable work, edge cases, validation expectations, and open questions. It does not write code. |
+| Designer | `.github/agents/designer.agent.md` | gpt-6-luna | Defines and implements the dashboard's visual design and responsive, accessible presentation within its assigned scope. For Project Pulse, it should deliver polished styling, project cards, status badges, clear priority treatment, readable spacing, and deterministic CSS hooks. |
+| Coder | `.github/agents/coder.agent.md` | gpt-6-luna | Implements the static dashboard and assigned runnable-app support. It follows the design direction, keeps the data and behavior deterministic, and validates its changes. |
 
 ## Project Pulse file ownership
 
@@ -58,3 +58,7 @@ This sequence is intentionally dependent: the Planner defines scope first,
 the Designer establishes the visual contract, and the Coder uses that contract
 in the HTML. The Orchestrator integrates after implementation. Do not parallelize
 work that shares a file or depends on an unfinished design decision.
+
+## Runtime compatibility adjustment
+
+The template originally assigned Claude Opus 5.5 to Orchestrator and Planner, Gemini 3.7 Flash to Designer, and GPT-5.5 to Coder. Those display names were rejected by this CLI session. All four profiles now use the available model ID `gpt-6-luna`; responsibilities and tool boundaries remain unchanged. Initial attempts at Planner and Coder delegation failed and fell back to general-purpose tasks, so the named-agent planning phase will be repeated after this correction.
